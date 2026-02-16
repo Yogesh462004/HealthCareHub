@@ -5,18 +5,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "doctors")
+@Table(name = "patients")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Doctor {
+public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long doctorId;
+    private Long patientId;
 
     @Column(nullable = false)
     private String firstName;
@@ -29,17 +30,22 @@ public class Doctor {
 
     private String phone;
 
-    private String specialization;
+    private String address;
 
-    private String qualification;
+    private LocalDate dateOfBirth;
 
-    private Integer experienceYears;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
-    private String licenseNumber;
+    private String bloodGroup;
+
+    // Emergency contact
+    private String emergencyContactName;
+    private String emergencyContactPhone;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private DoctorStatus status;
+    private PatientStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -49,7 +55,7 @@ public class Doctor {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         if (this.status == null) {
-            this.status = DoctorStatus.ACTIVE;
+            this.status = PatientStatus.ACTIVE;
         }
     }
 
@@ -58,7 +64,11 @@ public class Doctor {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public enum DoctorStatus {
-        ACTIVE, INACTIVE, ON_LEAVE
+    public enum Gender {
+        MALE, FEMALE, OTHER
+    }
+
+    public enum PatientStatus {
+        ACTIVE, INACTIVE, DISCHARGED
     }
 }

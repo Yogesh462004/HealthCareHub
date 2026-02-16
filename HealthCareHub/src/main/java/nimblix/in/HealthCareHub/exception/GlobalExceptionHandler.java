@@ -12,7 +12,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 - Resource not found
+    // ── 404 Not Found
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleUserNotFound(UserNotFoundException ex) {
         Map<String, Object> response = new HashMap<>();
@@ -23,7 +24,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AdminNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleAdminNotFound(UserNotFoundException ex) {
+    public ResponseEntity<Map<String, Object>> handleAdminNotFound(AdminNotFoundException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", HttpStatus.NOT_FOUND.value());
         response.put("error", "Not Found");
@@ -31,8 +32,44 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(PatientNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handlePatientNotFound(PatientNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "Not Found");
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 
-    // 400 - Bad request (invalid inputs)
+    @ExceptionHandler(DoctorNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleDoctorNotFound(DoctorNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "Not Found");
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RoomNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleRoomNotFound(RoomNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "Not Found");
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AdmissionNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleAdmissionNotFound(AdmissionNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.NOT_FOUND.value());
+        response.put("error", "Not Found");
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    // ── 400 Bad Request
+
     @ExceptionHandler({
             IllegalArgumentException.class,
             PaymentException.class,
@@ -46,7 +83,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // 500 - Generic / fallback exception
+    // ── 500 Internal Server Error
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         Map<String, Object> response = new HashMap<>();

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nimblix.in.HealthCareHub.utility.HealthCareUtil;
 
 import java.time.LocalDateTime;
 
@@ -40,13 +41,13 @@ public class Room {
     @Column(nullable = false)
     private RoomStatus status;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String createdAt;
+    private String updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();;
+        this.updatedAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();;
         if (this.status == null) {
             this.status = RoomStatus.AVAILABLE;
         }
@@ -57,7 +58,7 @@ public class Room {
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();;
     }
 
     // Used by AdmissionServiceImpl — room.getRoomType()

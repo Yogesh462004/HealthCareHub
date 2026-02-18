@@ -2,14 +2,15 @@ package nimblix.in.HealthCareHub.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import nimblix.in.HealthCareHub.utility.HealthCareUtil;
 
 @Entity
 @Table(name = "admissions")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Admission {
@@ -30,7 +31,7 @@ public class Admission {
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    private LocalDateTime admissionDate;
+    private String admissionDate;
 
     private String admissionReason;
 
@@ -41,28 +42,35 @@ public class Admission {
     @Enumerated(EnumType.STRING)
     private AdmissionStatus status;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
 
-    private LocalDateTime updatedAt;
+    private String updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        if (this.admissionDate == null) {
-            this.admissionDate = LocalDateTime.now();
-        }
+
+        this.createdAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
+        this.updatedAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
+
         if (this.status == null) {
             this.status = AdmissionStatus.ADMITTED;
+        }
+
+        if (this.admissionDate == null || this.admissionDate.isEmpty()) {
+            this.admissionDate =
+                    HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
         }
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt =
+                HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
     }
 
     public enum AdmissionStatus {
-        ADMITTED, DISCHARGED, TRANSFERRED
+        ADMITTED,
+        DISCHARGED,
+        TRANSFERRED
     }
 }

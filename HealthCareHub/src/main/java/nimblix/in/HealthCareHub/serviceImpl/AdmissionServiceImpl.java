@@ -2,14 +2,13 @@ package nimblix.in.HealthCareHub.serviceImpl;
 
 import nimblix.in.HealthCareHub.dto.AdmitPatientRequestDTO;
 import nimblix.in.HealthCareHub.dto.AdmitPatientResponseDTO;
-import nimblix.in.HealthCareHub.model.Admission;
-import nimblix.in.HealthCareHub.model.Admission.AdmissionStatus;
-import nimblix.in.HealthCareHub.model.Doctor;
-import nimblix.in.HealthCareHub.model.Patient;
-import nimblix.in.HealthCareHub.model.Room;
 import nimblix.in.HealthCareHub.exception.DoctorNotFoundException;
 import nimblix.in.HealthCareHub.exception.PatientNotFoundException;
 import nimblix.in.HealthCareHub.exception.RoomNotFoundException;
+import nimblix.in.HealthCareHub.model.Admission;
+import nimblix.in.HealthCareHub.model.Doctor;
+import nimblix.in.HealthCareHub.model.Patient;
+import nimblix.in.HealthCareHub.model.Room;
 import nimblix.in.HealthCareHub.repository.AdmissionRepository;
 import nimblix.in.HealthCareHub.repository.DoctorRepository;
 import nimblix.in.HealthCareHub.repository.PatientRepository;
@@ -18,8 +17,6 @@ import nimblix.in.HealthCareHub.service.AdmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 public class AdmissionServiceImpl implements AdmissionService {
@@ -40,70 +37,111 @@ public class AdmissionServiceImpl implements AdmissionService {
     @Transactional
     public AdmitPatientResponseDTO admitPatient(AdmitPatientRequestDTO request) {
 
-        // 1. Validate Patient exists
+        // ── STEP 1: VALIDATE PATIENT EXISTS
+        // Uses Patient.id (Long) instead of patientId
         Patient patient = patientRepository.findById(request.getPatientId())
-                .orElseThrow(() -> new PatientNotFoundException("Patient not found with id: " + request.getPatientId()));
+                .orElseThrow(() -> new PatientNotFoundException(
+                        "Patient not found with id: " + request.getPatientId()));
 
-        // 2. Check Patient is not already admitted
-        boolean alreadyAdmitted = admissionRepository
-                .existsByPatient_PatientIdAndStatus(request.getPatientId(), AdmissionStatus.ADMITTED);
-        if (alreadyAdmitted) {
-            throw new IllegalArgumentException("Patient is already admitted. Please discharge first.");
-        }
-
-        // 3. Validate doctor exists
-        Doctor doctor = doctorRepository.findById(request.getDoctorId())
-                .orElseThrow(() -> new DoctorNotFoundException("Doctor not found with id: " + request.getDoctorId()));
-
-        // 4. Validate room exists and is not occupied
-        Room room = roomRepository.findById(request.getRoomId())
-                .orElseThrow(() -> new RoomNotFoundException("Room not found with id: " + request.getRoomId()));
-
-        boolean roomOccupied = admissionRepository
-                .existsByRoom_RoomIdAndStatus(request.getRoomId(), AdmissionStatus.ADMITTED);
-        if (roomOccupied) {
-            throw new IllegalArgumentException("Room " + room.getRoomNumber() + " is already occupied.");
-        }
-
-        // 5. Create and save admission
-        Admission admission = new Admission();
-        admission.setPatient(patient);
-        admission.setDoctor(doctor);
-        admission.setRoom(room);
-        admission.setAdmissionDate(
-                request.getAdmissionDate() != null ? request.getAdmissionDate() : LocalDateTime.now()
+        // ── STEP 2: CHECK PATIENT NOT ALREADY ADMITTED
+        // Uses Patient.id and status as String "ADMITTED"
+        boolean isPatientAlreadyAdmitted =
+        admissionRepository.existsByPatient_IdAndStatus(
+                patient.getId(),
+                Admission.AdmissionStatus.ADMITTED
         );
-        admission.setAdmissionReason(request.getAdmissionReason());
-        admission.setSymptoms(request.getSymptoms());
-        admission.setInitialDiagnosis(request.getInitialDiagnosis());
-        admission.setStatus(AdmissionStatus.ADMITTED);
 
-        Admission saved = admissionRepository.save(admission);
 
-        // 6. Update room status to occupied
+        if (isPatientAlreadyAdmitted) {
+            throw new IllegalArgumentException(
+                    "Patient is already admitted. Cannot admit the same patient twice.");
+        }
+
+        // ── STEP 3: VALIDATE DOCTOR EXISTS
+        // Uses Doctor.id (Long)
+        Doctor doctor = doctorRepository.findById(request.getDoctorId())
+                .orElseThrow(() -> new DoctorNotFoundException(
+                        "Doctor not found with id: " + request.getDoctorId()));
+
+        // ── STEP 4: VALIDATE ROOM EXISTS
+        // Uses Room.roomId (Long)
+        Room room = roomRepository.findById(request.getRoomId())
+                .orElseThrow(() -> new RoomNotFoundException(
+                        "Room not found with id: " + request.getRoomId()));
+
+        // ── STEP 5: CHECK ROOM NOT OCCUPIED
+        // Uses Room.roomId and status as String "ADMITTED"
+        boolean isRoomOccupied =
+                admissionRepository.existsByRoom_RoomIdAndStatus(
+                        room.getRoomId(),
+                        Admission.AdmissionStatus.ADMITTED
+                );
+
+        if (isRoomOccupied) {
+            throw new IllegalArgumentException(
+                    "Room " + room.getRoomNumber() + " is already occupied. Please select another room.");
+        }
+
+        // ── STEP 6: CREATE AND SAVE ADMISSION
+        // Build Admission using Builder pattern
+        Admission admission = Admission.builder()
+                .patient(patient)
+                .doctor(doctor)
+                .room(room)
+                .admissionReason(request.getAdmissionReason())
+                .symptoms(request.getSymptoms())
+                .initialDiagnosis(request.getInitialDiagnosis())
+                .status(Admission.AdmissionStatus.ADMITTED)
+
+
+
+                .build();
+
+        Admission savedAdmission = admissionRepository.save(admission);
+
+        // ── STEP 7: UPDATE ROOM STATUS TO OCCUPIED
         room.setStatus(Room.RoomStatus.OCCUPIED);
         roomRepository.save(room);
 
-        // 7. Build and return response
-        return mapToResponse(saved, patient, doctor, room);
+        // ── STEP 8: BUILD AND RETURN RESPONSE DTO
+        return mapToResponse(savedAdmission);
     }
 
-    private AdmitPatientResponseDTO mapToResponse(Admission admission, Patient patient, Doctor doctor, Room room) {
+    private AdmitPatientResponseDTO mapToResponse(Admission admission) {
         AdmitPatientResponseDTO response = new AdmitPatientResponseDTO();
+
+        // Admission info
         response.setAdmissionId(admission.getAdmissionId());
-        response.setPatientId(patient.getPatientId());
-        response.setPatientName(patient.getFirstName() + " " + patient.getLastName());
-        response.setDoctorId(doctor.getDoctorId());
-        response.setDoctorName("Dr. " + doctor.getFirstName() + " " + doctor.getLastName());
-        response.setRoomId(room.getRoomId());
-        response.setRoomNumber(room.getRoomNumber());
-        response.setRoomType(room.getRoomType());
-        response.setAdmissionDate(admission.getAdmissionDate());
+        response.setAdmissionDate(String.valueOf(admission.getAdmissionDate()));
         response.setAdmissionReason(admission.getAdmissionReason());
         response.setSymptoms(admission.getSymptoms());
         response.setInitialDiagnosis(admission.getInitialDiagnosis());
-        response.setStatus(admission.getStatus());
-        response.setCreatedAt(admission.getCreatedAt());
+        response.setStatus(String.valueOf(admission.getStatus()));
+
+        // Patient info - uses Patient.id and Patient.name (single field)
+        Patient patient = admission.getPatient();
+        response.setPatientId(patient.getId());
+        response.setPatientName(patient.getName());
+        response.setPatientPhone(patient.getPhone());
+
+        // Doctor info - uses Doctor.id, Doctor.name, Doctor.specialization.name
+        Doctor doctor = admission.getDoctor();
+        response.setDoctorId(doctor.getId());
+        response.setDoctorName("Dr. " + doctor.getName());
+
+        // Get specialization name if exists
+        if (doctor.getSpecialization() != null) {
+            response.setDoctorSpecialization(doctor.getSpecialization().getName());
+        } else {
+            response.setDoctorSpecialization("General");
+        }
+
+        // Room info - uses Room.roomId, Room.roomNumber, Room.getRoomType()
+        Room room = admission.getRoom();
+        response.setRoomId(room.getRoomId());
+        response.setRoomNumber(room.getRoomNumber());
+        response.setRoomType(room.getRoomType());  // Returns enum.name() as String
+
         return response;
     }
 }

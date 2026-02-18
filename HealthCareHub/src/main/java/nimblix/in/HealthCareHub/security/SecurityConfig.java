@@ -1,4 +1,4 @@
-package nimblix.in.HealthCareHub.security;
+/*package nimblix.in.HealthCareHub.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -53,3 +53,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+*/

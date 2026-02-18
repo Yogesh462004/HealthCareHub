@@ -1,7 +1,6 @@
 package nimblix.in.HealthCareHub.repository;
 
 import nimblix.in.HealthCareHub.model.Admission;
-import nimblix.in.HealthCareHub.model.Admission.AdmissionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,12 +9,17 @@ import java.util.List;
 @Repository
 public interface AdmissionRepository extends JpaRepository<Admission, Long> {
 
-    // Check if Patient already has an active admission
-    boolean existsByPatient_PatientIdAndStatus(Long patientId, AdmissionStatus status);
+    // Check if patient already has an active admission
+    // Uses Patient.id (not patientId) and status as String
+    boolean existsByPatient_IdAndStatus(Long patientId, Admission.AdmissionStatus status);
 
-    // Check if room is already occupied
-    boolean existsByRoom_RoomIdAndStatus(Long roomId, AdmissionStatus status);
+    // Check if room already has an active admission
+    boolean existsByRoom_RoomIdAndStatus(Long roomId, Admission.AdmissionStatus status);
 
-    // Get all admissions for a Patient
-    List<Admission> findByPatient_PatientId(Long patientId);
+
+    // Uses Patient.id
+    List<Admission> findByPatient_Id(Long patientId);
+
+    //Get admission history by patient and status
+    List<Admission> findByPatient_IdAndStatus(Long patientId, Admission.AdmissionStatus status);
 }

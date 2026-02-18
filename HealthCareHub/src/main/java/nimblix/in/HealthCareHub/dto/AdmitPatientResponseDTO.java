@@ -3,9 +3,6 @@ package nimblix.in.HealthCareHub.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nimblix.in.HealthCareHub.model.Admission.AdmissionStatus;
-
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -14,21 +11,25 @@ public class AdmitPatientResponseDTO {
 
     private Long admissionId;
 
+    // Patient info
     private Long patientId;
     private String patientName;
+    private String patientPhone;
 
+    // Doctor info
     private Long doctorId;
     private String doctorName;
+    private String doctorSpecialization;
 
+    // Room info
     private Long roomId;
     private String roomNumber;
     private String roomType;
 
-    private LocalDateTime admissionDate;
+    // Admission details
+    private String admissionDate;
     private String admissionReason;
     private String symptoms;
     private String initialDiagnosis;
-    private AdmissionStatus status;
-
-    private LocalDateTime createdAt;
+    private String status;
 }

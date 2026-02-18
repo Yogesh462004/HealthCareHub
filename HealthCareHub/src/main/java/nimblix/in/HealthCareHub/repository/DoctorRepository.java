@@ -10,11 +10,13 @@ import java.util.Optional;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
-    Optional<Doctor> findByEmail(String email);
 
-    boolean existsByEmail(String email);
+    // Find doctors by hospital
+    List<Doctor> findByHospital_Id(Long hospitalId);
 
-    List<Doctor> findByStatus(Doctor.DoctorStatus status);
+    // Find doctors by specialization
+    List<Doctor> findBySpecialization_Id(Long specializationId);
 
-    List<Doctor> findBySpecialization(String specialization);
+    // Find doctors by hospital and specialization
+    List<Doctor> findByHospital_IdAndSpecialization_Id(Long hospitalId, Long specializationId);
 }

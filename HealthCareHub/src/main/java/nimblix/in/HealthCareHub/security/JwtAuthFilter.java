@@ -1,4 +1,4 @@
-/*package nimblix.in.HealthCareHub.security;
+package nimblix.in.HealthCareHub.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -73,4 +73,3 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-*/

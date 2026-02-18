@@ -1,4 +1,4 @@
-/*package nimblix.in.HealthCareHub.security;
+package nimblix.in.HealthCareHub.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -54,4 +54,3 @@ public class JwtUtil {
                 .getBody();
     }
 }
-*/

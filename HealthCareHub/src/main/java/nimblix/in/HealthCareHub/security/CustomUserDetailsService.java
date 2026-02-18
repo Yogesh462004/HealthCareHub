@@ -1,4 +1,4 @@
-/*package nimblix.in.HealthCareHub.security;
+package nimblix.in.HealthCareHub.security;
 
 import lombok.RequiredArgsConstructor;
 import nimblix.in.HealthCareHub.model.User;
@@ -36,4 +36,3 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
     }
 }
-*/

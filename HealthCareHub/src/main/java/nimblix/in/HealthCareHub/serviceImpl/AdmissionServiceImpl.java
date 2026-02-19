@@ -1,7 +1,7 @@
 package nimblix.in.HealthCareHub.serviceImpl;
 
-import nimblix.in.HealthCareHub.dto.AdmitPatientRequestDTO;
-import nimblix.in.HealthCareHub.dto.AdmitPatientResponseDTO;
+import nimblix.in.HealthCareHub.request.AdmitPatientRequestDTO;
+import nimblix.in.HealthCareHub.response.AdmitPatientResponseDTO;
 import nimblix.in.HealthCareHub.exception.DoctorNotFoundException;
 import nimblix.in.HealthCareHub.exception.PatientNotFoundException;
 import nimblix.in.HealthCareHub.exception.RoomNotFoundException;
@@ -37,13 +37,11 @@ public class AdmissionServiceImpl implements AdmissionService {
     @Transactional
     public AdmitPatientResponseDTO admitPatient(AdmitPatientRequestDTO request) {
 
-        // ── STEP 1: VALIDATE PATIENT EXISTS
         // Uses Patient.id (Long) instead of patientId
         Patient patient = patientRepository.findById(request.getPatientId())
                 .orElseThrow(() -> new PatientNotFoundException(
                         "Patient not found with id: " + request.getPatientId()));
 
-        // ── STEP 2: CHECK PATIENT NOT ALREADY ADMITTED
         // Uses Patient.id and status as String "ADMITTED"
         boolean isPatientAlreadyAdmitted =
         admissionRepository.existsByPatient_IdAndStatus(
@@ -57,19 +55,16 @@ public class AdmissionServiceImpl implements AdmissionService {
                     "Patient is already admitted. Cannot admit the same patient twice.");
         }
 
-        // ── STEP 3: VALIDATE DOCTOR EXISTS
-        // Uses Doctor.id (Long)
+
+
         Doctor doctor = doctorRepository.findById(request.getDoctorId())
                 .orElseThrow(() -> new DoctorNotFoundException(
                         "Doctor not found with id: " + request.getDoctorId()));
 
-        // ── STEP 4: VALIDATE ROOM EXISTS
-        // Uses Room.roomId (Long)
         Room room = roomRepository.findById(request.getRoomId())
                 .orElseThrow(() -> new RoomNotFoundException(
                         "Room not found with id: " + request.getRoomId()));
 
-        // ── STEP 5: CHECK ROOM NOT OCCUPIED
         // Uses Room.roomId and status as String "ADMITTED"
         boolean isRoomOccupied =
                 admissionRepository.existsByRoom_RoomIdAndStatus(
@@ -82,7 +77,6 @@ public class AdmissionServiceImpl implements AdmissionService {
                     "Room " + room.getRoomNumber() + " is already occupied. Please select another room.");
         }
 
-        // ── STEP 6: CREATE AND SAVE ADMISSION
         // Build Admission using Builder pattern
         Admission admission = Admission.builder()
                 .patient(patient)
@@ -99,11 +93,9 @@ public class AdmissionServiceImpl implements AdmissionService {
 
         Admission savedAdmission = admissionRepository.save(admission);
 
-        // ── STEP 7: UPDATE ROOM STATUS TO OCCUPIED
         room.setStatus(Room.RoomStatus.OCCUPIED);
         roomRepository.save(room);
 
-        // ── STEP 8: BUILD AND RETURN RESPONSE DTO
         return mapToResponse(savedAdmission);
     }
 

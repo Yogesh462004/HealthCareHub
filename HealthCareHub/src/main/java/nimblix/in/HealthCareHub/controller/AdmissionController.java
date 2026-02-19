@@ -1,7 +1,7 @@
 package nimblix.in.HealthCareHub.controller;
 
-import nimblix.in.HealthCareHub.dto.AdmitPatientRequestDTO;
-import nimblix.in.HealthCareHub.dto.AdmitPatientResponseDTO;
+import nimblix.in.HealthCareHub.request.AdmitPatientRequestDTO;
+import nimblix.in.HealthCareHub.response.AdmitPatientResponseDTO;
 import nimblix.in.HealthCareHub.service.AdmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

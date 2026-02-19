@@ -1,6 +1,6 @@
 package nimblix.in.HealthCareHub.service;
 
-import nimblix.in.HealthCareHub.dto.LabResultResponseDTO;
+import nimblix.in.HealthCareHub.response.LabResultResponseDTO;
 
 import java.util.List;
 

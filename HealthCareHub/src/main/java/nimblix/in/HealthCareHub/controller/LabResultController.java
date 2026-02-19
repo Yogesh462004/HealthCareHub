@@ -1,6 +1,6 @@
 package nimblix.in.HealthCareHub.controller;
 
-import nimblix.in.HealthCareHub.dto.LabResultResponseDTO;
+import nimblix.in.HealthCareHub.response.LabResultResponseDTO;
 import nimblix.in.HealthCareHub.service.LabResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

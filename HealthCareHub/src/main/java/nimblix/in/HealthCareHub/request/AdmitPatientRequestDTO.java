@@ -1,4 +1,4 @@
-package nimblix.in.HealthCareHub.dto;
+package nimblix.in.HealthCareHub.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

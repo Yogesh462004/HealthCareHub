@@ -1,6 +1,6 @@
 package nimblix.in.HealthCareHub.serviceImpl;
 
-import nimblix.in.HealthCareHub.dto.LabResultResponseDTO;
+import nimblix.in.HealthCareHub.response.LabResultResponseDTO;
 import nimblix.in.HealthCareHub.exception.LabResultNotFoundException;
 import nimblix.in.HealthCareHub.exception.PatientNotFoundException;
 import nimblix.in.HealthCareHub.model.Doctor;
@@ -48,8 +48,8 @@ public class LabResultServiceImpl implements LabResultService {
         /* List<LabResultResponseDTO> responseList = new ArrayList<>();
 
         for (LabResult labResult : results) {
-            LabResultResponseDTO dto = mapToResponse(labResult);
-            responseList.add(dto);
+            LabResultResponseDTO request = mapToResponse(labResult);
+            responseList.add(request);
         }
 
         return responseList;*/

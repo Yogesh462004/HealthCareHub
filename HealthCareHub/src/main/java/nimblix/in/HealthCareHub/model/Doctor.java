@@ -26,22 +26,26 @@ public class Doctor {
     @Column(name = "phoneNo")
     private String phone;
 
+    @Column(name = "EmailId")
+    private String EmailId;
+
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "qualification")
     private String qualification;
 
     // Login User (Doctor Account)
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+     @Column(name = "user_id")
+    private Long userId;
 
     // Many Doctors → One Hospital
-    @ManyToOne
-    @JoinColumn(name = "hospital_id")
-    private Hospital hospital;
 
-    @ManyToOne
-    @JoinColumn(name = "specialization_id")
-    private Specialization specialization;
+    @Column(name = "hospital_id")
+    private Long hospitalId;
+
+    @Column(name = "specialization_id")
+    private Long specializationId;
 
     @Column(name = "created_time")
     private String createdTime;

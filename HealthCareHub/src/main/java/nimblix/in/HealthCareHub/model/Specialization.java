@@ -21,8 +21,6 @@ public class Specialization {
 
     private String name;
 
-    @OneToMany(mappedBy = "specialization")
-    private List<Doctor> doctors;
 
     @Column(name = "created_time")
     private String createdTime;

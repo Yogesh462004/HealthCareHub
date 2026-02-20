@@ -11,12 +11,5 @@ import java.util.Optional;
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
 
-    // Find doctors by hospital
-    List<Doctor> findByHospital_Id(Long hospitalId);
 
-    // Find doctors by specialization
-    List<Doctor> findBySpecialization_Id(Long specializationId);
-
-    // Find doctors by hospital and specialization
-    List<Doctor> findByHospital_IdAndSpecialization_Id(Long hospitalId, Long specializationId);
 }

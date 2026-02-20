@@ -10,16 +10,16 @@ import java.util.List;
 public interface AdmissionRepository extends JpaRepository<Admission, Long> {
 
     // Check if patient already has an active admission
-    // Uses Patient.id (not patientId) and status as String
-    boolean existsByPatient_IdAndStatus(Long patientId, Admission.AdmissionStatus status);
+    // Uses simple Long patientId field
+    boolean existsByPatientIdAndStatus(Long patientId, String status);
 
     // Check if room already has an active admission
-    boolean existsByRoom_RoomIdAndStatus(Long roomId, Admission.AdmissionStatus status);
+    // Uses simple Long roomId field
+    boolean existsByRoomIdAndStatus(Long roomId, String status);
 
+    // Get admission history by patient
+    List<Admission> findByPatientId(Long patientId);
 
-    // Uses Patient.id
-    List<Admission> findByPatient_Id(Long patientId);
-
-    //Get admission history by patient and status
-    List<Admission> findByPatient_IdAndStatus(Long patientId, Admission.AdmissionStatus status);
+    // Get admission history by patient and status
+    List<Admission> findByPatientIdAndStatus(Long patientId, String status);
 }

@@ -1,18 +1,12 @@
 package nimblix.in.HealthCareHub.serviceImpl;
 
+import nimblix.in.HealthCareHub.model.*;
+import nimblix.in.HealthCareHub.repository.*;
 import nimblix.in.HealthCareHub.request.AdmitPatientRequestDTO;
 import nimblix.in.HealthCareHub.response.AdmitPatientResponseDTO;
 import nimblix.in.HealthCareHub.exception.DoctorNotFoundException;
 import nimblix.in.HealthCareHub.exception.PatientNotFoundException;
 import nimblix.in.HealthCareHub.exception.RoomNotFoundException;
-import nimblix.in.HealthCareHub.model.Admission;
-import nimblix.in.HealthCareHub.model.Doctor;
-import nimblix.in.HealthCareHub.model.Patient;
-import nimblix.in.HealthCareHub.model.Room;
-import nimblix.in.HealthCareHub.repository.AdmissionRepository;
-import nimblix.in.HealthCareHub.repository.DoctorRepository;
-import nimblix.in.HealthCareHub.repository.PatientRepository;
-import nimblix.in.HealthCareHub.repository.RoomRepository;
 import nimblix.in.HealthCareHub.service.AdmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,30 +26,23 @@ public class AdmissionServiceImpl implements AdmissionService {
 
     @Autowired
     private RoomRepository roomRepository;
+    @Autowired
+    private SpecializationRepository specializationRepository;
 
     @Override
     @Transactional
     public AdmitPatientResponseDTO admitPatient(AdmitPatientRequestDTO request) {
 
-        // Uses Patient.id (Long) instead of patientId
         Patient patient = patientRepository.findById(request.getPatientId())
                 .orElseThrow(() -> new PatientNotFoundException(
                         "Patient not found with id: " + request.getPatientId()));
 
-        // Uses Patient.id and status as String "ADMITTED"
-        boolean isPatientAlreadyAdmitted =
-        admissionRepository.existsByPatient_IdAndStatus(
-                patient.getId(),
-                Admission.AdmissionStatus.ADMITTED
-        );
-
-
+        boolean isPatientAlreadyAdmitted = admissionRepository
+                .existsByPatientIdAndStatus(request.getPatientId(), "ADMITTED");
         if (isPatientAlreadyAdmitted) {
             throw new IllegalArgumentException(
                     "Patient is already admitted. Cannot admit the same patient twice.");
         }
-
-
 
         Doctor doctor = doctorRepository.findById(request.getDoctorId())
                 .orElseThrow(() -> new DoctorNotFoundException(
@@ -65,30 +52,22 @@ public class AdmissionServiceImpl implements AdmissionService {
                 .orElseThrow(() -> new RoomNotFoundException(
                         "Room not found with id: " + request.getRoomId()));
 
-        // Uses Room.roomId and status as String "ADMITTED"
-        boolean isRoomOccupied =
-                admissionRepository.existsByRoom_RoomIdAndStatus(
-                        room.getRoomId(),
-                        Admission.AdmissionStatus.ADMITTED
-                );
-
+        boolean isRoomOccupied = admissionRepository
+                .existsByRoomIdAndStatus(request.getRoomId(), "ADMITTED");
         if (isRoomOccupied) {
             throw new IllegalArgumentException(
-                    "Room " + room.getRoomNumber() + " is already occupied. Please select another room.");
+                    "Room " + room.getRoomNumber() + " is already occupied. " +
+                            "Please select another room.");
         }
 
-        // Build Admission using Builder pattern
         Admission admission = Admission.builder()
-                .patient(patient)
-                .doctor(doctor)
-                .room(room)
+                .patientId(request.getPatientId())
+                .doctorId(request.getDoctorId())
+                .roomId(request.getRoomId())
                 .admissionReason(request.getAdmissionReason())
                 .symptoms(request.getSymptoms())
                 .initialDiagnosis(request.getInitialDiagnosis())
-                .status(Admission.AdmissionStatus.ADMITTED)
-
-
-
+                .status("ADMITTED")
                 .build();
 
         Admission savedAdmission = admissionRepository.save(admission);
@@ -96,43 +75,46 @@ public class AdmissionServiceImpl implements AdmissionService {
         room.setStatus(Room.RoomStatus.OCCUPIED);
         roomRepository.save(room);
 
-        return mapToResponse(savedAdmission);
+        return mapToResponse(savedAdmission, patient, doctor, room);
     }
 
-    private AdmitPatientResponseDTO mapToResponse(Admission admission) {
+    private AdmitPatientResponseDTO mapToResponse(Admission admission,
+                                                  Patient patient,
+                                                  Doctor doctor,
+                                                  Room room) {
         AdmitPatientResponseDTO response = new AdmitPatientResponseDTO();
 
         // Admission info
         response.setAdmissionId(admission.getAdmissionId());
-        response.setAdmissionDate(String.valueOf(admission.getAdmissionDate()));
+        response.setAdmissionDate(admission.getAdmissionDate());
         response.setAdmissionReason(admission.getAdmissionReason());
         response.setSymptoms(admission.getSymptoms());
         response.setInitialDiagnosis(admission.getInitialDiagnosis());
-        response.setStatus(String.valueOf(admission.getStatus()));
+        response.setStatus(admission.getStatus());
 
-        // Patient info - uses Patient.id and Patient.name (single field)
-        Patient patient = admission.getPatient();
+        // Patient info
         response.setPatientId(patient.getId());
         response.setPatientName(patient.getName());
         response.setPatientPhone(patient.getPhone());
 
-        // Doctor info - uses Doctor.id, Doctor.name, Doctor.specialization.name
-        Doctor doctor = admission.getDoctor();
+        // Doctor info
         response.setDoctorId(doctor.getId());
         response.setDoctorName("Dr. " + doctor.getName());
 
-        // Get specialization name if exists
-        if (doctor.getSpecialization() != null) {
-            response.setDoctorSpecialization(doctor.getSpecialization().getName());
+
+        Specialization specialization = specializationRepository
+                .findById(doctor.getSpecializationId())
+                .orElse(null);
+        if (specialization != null) {
+            response.setDoctorSpecialization(specialization.getName());
         } else {
             response.setDoctorSpecialization("General");
         }
 
-        // Room info - uses Room.roomId, Room.roomNumber, Room.getRoomType()
-        Room room = admission.getRoom();
+        // Room info
         response.setRoomId(room.getRoomId());
         response.setRoomNumber(room.getRoomNumber());
-        response.setRoomType(room.getRoomType());  // Returns enum.name() as String
+        response.setRoomType(room.getRoomType());
 
         return response;
     }

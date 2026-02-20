@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import nimblix.in.HealthCareHub.utility.HealthCareUtil;
 
-
 @Entity
 @Table(name = "lab_results")
 @Getter
@@ -18,22 +17,13 @@ public class LabResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long resultId;
 
-    // ── FOREIGN KEY 1: PATIENT
-    // @ManyToOne — MANY lab results belong to ONE patient
-    // Creates column: lab_results.patient_id → patients.id
-    // PARENT: Patient   CHILD: LabResult (this entity holds the FK)
-    @ManyToOne
-    @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    // Simple Long FK - no @ManyToOne mapping
+    @Column(name = "patient_id")
+    private Long patientId;
 
-    // ── FOREIGN KEY 2: DOCTOR
-    // @ManyToOne — MANY lab results ordered by ONE doctor
-    // Creates column: lab_results.doctor_id → doctors.id
-    // PARENT: Doctor   CHILD: LabResult (this entity holds the FK)
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
-
+    // Simple Long FK - no @ManyToOne mapping
+    @Column(name = "doctor_id")
+    private Long doctorId;
 
     @Column(nullable = false)
     private String testName;
@@ -46,9 +36,8 @@ public class LabResult {
 
     private String unit;
 
-
     @Column(nullable = false)
-    private String status;
+    private String status;  // "PENDING", "COMPLETED", "NORMAL", "ABNORMAL"
 
     private String remarks;
 

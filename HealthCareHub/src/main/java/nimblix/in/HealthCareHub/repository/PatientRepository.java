@@ -9,9 +9,5 @@ import java.util.Optional;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
-    // Find patient by email (via User entity)
-    Optional<Patient> findByUser_Email(String email);
 
-    // Find patient by hospital
-    java.util.List<Patient> findByHospital_Id(Long hospitalId);
 }

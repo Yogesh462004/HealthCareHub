@@ -1,76 +1,66 @@
 package nimblix.in.HealthCareHub.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nimblix.in.HealthCareHub.utility.HealthCareUtil;
 
 @Entity
 @Table(name = "admissions")
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Admission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long admissionId;
 
-    @ManyToOne
-    @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    // Simple Long FK - no @ManyToOne mapping
+    @Column(name = "patient_id")
+    private Long patientId;
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
+    // Simple Long FK - no @ManyToOne mapping
+    @Column(name = "doctor_id")
+    private Long doctorId;
 
-    @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
+    // Simple Long FK - no @ManyToOne mapping
+    @Column(name = "room_id")
+    private Long roomId;
 
+    @Column(name = "admission_date")
     private String admissionDate;
 
+    @Column(name = "admission_reason")
     private String admissionReason;
 
     private String symptoms;
 
     private String initialDiagnosis;
 
-    @Enumerated(EnumType.STRING)
-    private AdmissionStatus status;
+    private String status;  // "ADMITTED", "DISCHARGED", "TRANSFERRED"
 
-    private String createdAt;
+    @Column(name = "created_time")
+    private String createdTime;
 
-    private String updatedAt;
+    @Column(name = "updated_time")
+    private String updatedTime;
 
     @PrePersist
     protected void onCreate() {
-
-        this.createdAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
-        this.updatedAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
-
-        if (this.status == null) {
-            this.status = AdmissionStatus.ADMITTED;
+        this.createdTime = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
+        this.updatedTime = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
+        if (this.admissionDate == null) {
+            this.admissionDate = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
         }
-
-        if (this.admissionDate == null || this.admissionDate.isEmpty()) {
-            this.admissionDate =
-                    HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
+        if (this.status == null) {
+            this.status = "ADMITTED";
         }
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt =
-                HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
-    }
-
-    public enum AdmissionStatus {
-        ADMITTED,
-        DISCHARGED,
-        TRANSFERRED
+        this.updatedTime = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
     }
 }

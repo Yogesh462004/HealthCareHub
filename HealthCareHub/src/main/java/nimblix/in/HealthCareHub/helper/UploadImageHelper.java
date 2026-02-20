@@ -1,4 +1,4 @@
-/*package nimblix.in.HealthCareHub.helper;
+package nimblix.in.HealthCareHub.helper;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -73,4 +73,4 @@ public class UploadImageHelper {
         return new MultipleImageResponse(SchoolConstants.STATUS_SUCCESS, "Image upload successful", uploadedFileNames);
     }
 
-}*/
+}

@@ -101,21 +101,9 @@ public class LabResultServiceImpl implements LabResultService {
         if (doctor != null) {
             response.setDoctorId(doctor.getId());
             response.setDoctorName(doctor.getName());
+            response.setDoctorSpecialization(doctor.getSpecialization().getName());
 
-            // Fetch Specialization manually
-            if (doctor.getSpecializationId() != null) {
-                Specialization specialization = specializationRepository
-                        .findById(doctor.getSpecializationId())
-                        .orElse(null);
 
-                if (specialization != null) {
-                    response.setDoctorSpecialization(specialization.getName());
-                } else {
-                    response.setDoctorSpecialization("General");
-                }
-            } else {
-                response.setDoctorSpecialization("General");
-            }
         }
 
         return response;

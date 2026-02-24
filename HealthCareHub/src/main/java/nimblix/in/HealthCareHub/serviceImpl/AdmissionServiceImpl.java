@@ -100,16 +100,9 @@ public class AdmissionServiceImpl implements AdmissionService {
         // Doctor info
         response.setDoctorId(doctor.getId());
         response.setDoctorName("Dr. " + doctor.getName());
+        response.setDoctorSpecialization(doctor.getSpecialization().getName());
 
 
-        Specialization specialization = specializationRepository
-                .findById(doctor.getSpecializationId())
-                .orElse(null);
-        if (specialization != null) {
-            response.setDoctorSpecialization(specialization.getName());
-        } else {
-            response.setDoctorSpecialization("General");
-        }
 
         // Room info
         response.setRoomId(room.getRoomId());

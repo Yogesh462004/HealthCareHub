@@ -1,7 +1,8 @@
-package nimblix.in.HealthCareHub.helper;
+/*package nimblix.in.HealthCareHub.helper;
 
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import nimblix.in.HealthCareHub.response.MultipleImageResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -74,3 +75,4 @@ public class UploadImageHelper {
     }
 
 }
+*/

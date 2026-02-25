@@ -5,7 +5,7 @@ import nimblix.in.HealthCareHub.exception.DoctorNotFoundException;
 import nimblix.in.HealthCareHub.model.Doctor;
 import nimblix.in.HealthCareHub.repository.DoctorRepository;
 import nimblix.in.HealthCareHub.request.DoctorRegistrationRequest;
-import nimblix.in.HealthCareHub.response.DoctorProfileResponseDTO;
+import nimblix.in.HealthCareHub.response.DoctorProfileResponse;
 import nimblix.in.HealthCareHub.service.DoctorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,7 @@ public class DoctorServiceImpl implements DoctorService {
     public ResponseEntity<?> getDoctorDetails(Long doctorId, Long hospitalId) {
         return null;
     }
-    @Override public DoctorProfileResponseDTO getDoctorProfile(Long doctorId) {
+    @Override public DoctorProfileResponse getDoctorProfile(Long doctorId) {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new DoctorNotFoundException( "Doctor not found with id: " + doctorId));
         Specialization specialization = null;
@@ -75,8 +75,8 @@ public class DoctorServiceImpl implements DoctorService {
         }
         return mapToResponse(doctor, specialization, hospital);
     }
-    private DoctorProfileResponseDTO mapToResponse(Doctor doctor, Specialization specialization, Hospital hospital) {
-        DoctorProfileResponseDTO response = new DoctorProfileResponseDTO();
+    private DoctorProfileResponse mapToResponse(Doctor doctor, Specialization specialization, Hospital hospital) {
+        DoctorProfileResponse response = new DoctorProfileResponse();
         response.setDoctorId(doctor.getId());
         response.setName(doctor.getName());
         response.setEmail(doctor.getEmailId());

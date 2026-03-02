@@ -41,13 +41,13 @@ public class Room {
     @Column(nullable = false)
     private RoomStatus status;
 
-    private String createdAt;
-    private String updatedAt;
+    private String createdTime;
+    private String updatedTime;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();;
-        this.updatedAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();;
+        this.createdTime = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();;
+        this.updatedTime = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();;
         if (this.status == null) {
             this.status = RoomStatus.AVAILABLE;
         }
@@ -58,7 +58,7 @@ public class Room {
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();;
+        this.updatedTime = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();;
     }
 
     // Used by AdmissionServiceImpl — room.getRoomType()

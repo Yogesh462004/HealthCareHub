@@ -21,10 +21,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleAdminNotFound(AdminNotFoundException ex) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
     }
-    @ExceptionHandler(PatientNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handlePatientNotFound(PatientNotFoundException ex) {
-        return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
+
     @ExceptionHandler(DoctorNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleDoctorNotFound(DoctorNotFoundException ex) {
         Map<String, Object> response = new HashMap<>();
@@ -34,10 +31,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(DoctorNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleDoctorNotFound(DoctorNotFoundException ex) {
-        return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
 
     @ExceptionHandler(RoomNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleRoomNotFound(RoomNotFoundException ex) {

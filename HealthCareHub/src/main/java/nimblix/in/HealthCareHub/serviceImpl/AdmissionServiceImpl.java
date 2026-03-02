@@ -5,7 +5,6 @@ import nimblix.in.HealthCareHub.repository.*;
 import nimblix.in.HealthCareHub.request.AdmitPatientRequest;
 import nimblix.in.HealthCareHub.response.AdmitPatientResponse;
 import nimblix.in.HealthCareHub.exception.DoctorNotFoundException;
-import nimblix.in.HealthCareHub.exception.PatientNotFoundException;
 import nimblix.in.HealthCareHub.exception.RoomNotFoundException;
 import nimblix.in.HealthCareHub.service.AdmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +34,11 @@ public class AdmissionServiceImpl implements AdmissionService {
     public AdmitPatientResponse admitPatient(AdmitPatientRequest request) {
 
         // Step 1: Validate Patient
-        Patient patient = patientRepository.findById(request.getPatientId())
-                .orElseThrow(() ->
-                        new PatientNotFoundException("Patient not found with id: " + request.getPatientId()));
+        Patient patient = patientRepository.findById(request.getPatientId()).orElse(null);
 
+        if (patient == null) {
+            return null;
+        }
         // Step 2: Check if Patient already admitted
         boolean isPatientAlreadyAdmitted =
                 admissionRepository.existsByPatientIdAndStatus(request.getPatientId(), "ADMITTED");

@@ -3,8 +3,6 @@ package nimblix.in.HealthCareHub.serviceImpl;
 import nimblix.in.HealthCareHub.repository.DoctorRepository;
 import nimblix.in.HealthCareHub.repository.SpecializationRepository;
 import nimblix.in.HealthCareHub.response.LabResultResponse;
-import nimblix.in.HealthCareHub.exception.LabResultNotFoundException;
-import nimblix.in.HealthCareHub.exception.PatientNotFoundException;
 import nimblix.in.HealthCareHub.model.Doctor;
 import nimblix.in.HealthCareHub.model.LabResult;
 import nimblix.in.HealthCareHub.model.Patient;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,32 +31,16 @@ public class LabResultServiceImpl implements LabResultService {
     @Autowired
     private SpecializationRepository specializationRepository;
 
-    @Override
-    public LabResultResponse getLabResultById(Long resultId) {
-
-
-        LabResult labResult = labResultRepository.findById(resultId)
-                .orElseThrow(() -> new LabResultNotFoundException(
-                        "Lab result not found with id: " + resultId));
-
-        return mapToResponse(labResult);
-    }
 
     @Override
     public List<LabResultResponse> getLabResultsByPatient(Long patientId) {
 
         // Validate patient exists
-        patientRepository.findById(patientId)
-                .orElseThrow(() -> new PatientNotFoundException(
-                        "Patient not found with id: " + patientId));
-                /* List<LabResultResponse> responseList = new ArrayList<>();
+        Optional<Patient> patient = patientRepository.findById(patientId);
 
-        for (LabResult labResult : results) {
-            LabResultResponse request = mapToResponse(labResult);
-            responseList.add(request);
+        if (patient.isEmpty()) {
+            return null;
         }
-      */
-
         List<LabResult> results = labResultRepository.findByPatientId(patientId);
 
         return results.stream()

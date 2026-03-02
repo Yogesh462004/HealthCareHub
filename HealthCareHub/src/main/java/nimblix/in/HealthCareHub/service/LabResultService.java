@@ -6,9 +6,6 @@ import java.util.List;
 
 public interface LabResultService {
 
-    // Task 186 - Get lab result by ID
-    LabResultResponse getLabResultById(Long resultId);
-
     // Get all lab results for a patient
     List<LabResultResponse> getLabResultsByPatient(Long patientId);
 }

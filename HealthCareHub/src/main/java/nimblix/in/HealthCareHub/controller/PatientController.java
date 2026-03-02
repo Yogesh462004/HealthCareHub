@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/patient")
+@RequestMapping("/api/patient")
 @RequiredArgsConstructor
 public class PatientController {
 
@@ -30,6 +30,14 @@ public class PatientController {
             @RequestBody AdmitPatientRequest request) {
 
         AdmitPatientResponse data = admissionService.admitPatient(request);
+
+        if (data == null) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", HttpStatus.NOT_FOUND.value());
+            error.put("message", "Patient or Doctor not found");
+
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", HttpStatus.CREATED.value());
@@ -47,6 +55,14 @@ public class PatientController {
             @PathVariable Long patientId) {
 
         List<LabResultResponse> data = labResultService.getLabResultsByPatient(patientId);
+
+        if (data == null) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", HttpStatus.NOT_FOUND.value());
+            error.put("message", "Patient not found with id: " + patientId);
+
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", HttpStatus.OK.value());

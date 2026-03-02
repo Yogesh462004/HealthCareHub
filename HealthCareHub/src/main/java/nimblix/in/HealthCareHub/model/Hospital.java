@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import nimblix.in.HealthCareHub.utility.HealthCareUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,6 +34,14 @@ public class Hospital {
 
     private Integer totalBeds;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "hospital_rooms",
+            joinColumns = @JoinColumn(name = "hospital_id")
+    )
+
+    private List<Room> rooms = new ArrayList<>();
+
 
     @Column(name = "created_time", updatable = false)
     private String createdTime;
@@ -50,4 +59,21 @@ public class Hospital {
     protected void onUpdate() {
         updatedTime = HealthCareUtil.changeCurrentTimeToLocalDateFromGmtToISTInString();
     }
+
+    @Embeddable
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Room {
+
+        private String roomNumber;
+        private String roomType;
+        private boolean available;
+
+    }
 }
+
+
+

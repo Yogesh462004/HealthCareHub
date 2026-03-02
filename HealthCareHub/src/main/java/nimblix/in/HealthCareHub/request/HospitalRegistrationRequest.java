@@ -3,6 +3,8 @@ package nimblix.in.HealthCareHub.request;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class HospitalRegistrationRequest {
@@ -14,4 +16,14 @@ public class HospitalRegistrationRequest {
     private String phone;
     private String email;
     private Integer totalBeds;
+
+    private List<Room> rooms;
+
+    @Getter
+    @Setter
+    public static class Room {
+        private String roomNumber;
+        private String roomType;
+        private boolean available;
+    }
 }
